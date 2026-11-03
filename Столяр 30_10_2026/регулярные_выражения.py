@@ -60,6 +60,7 @@ print(res)
 # print(regex.findall('\nd_r56#12weerrttyu '))
 
 
+
 def get_password(m):
     # data = set(ascii_letters + digits) - {'0', '1', 'o', 'O', 'l', 'I'}
     # data = ''.join(data)
