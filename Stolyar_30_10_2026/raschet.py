@@ -17,5 +17,6 @@ class Circle(Shape):
         print(f'Площадь: {self.calc_square():.2f} кв.ед.')
 
 
+
 c = Circle(2)
 c.display()

@@ -27,6 +27,7 @@ class Rectangle(Shape):
               f'Ширина: {self.width} ед.\n'
               f'Площадь: {self.calc_square()} кв.ед.')
 
+
 # print(__name__)
 if __name__ == '__main__':
     r = Rectangle(4, 2)
