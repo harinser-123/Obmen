@@ -62,4 +62,34 @@ target_name_label.pack(pady=(2, 15))
 target_combobox.bind('<<ComboboxSelected>>', lambda e: update_label(e, target_combobox, target_name_label))
 
 
+# --- Функция расчёта и вывода курса ---
+def exchange():
+    base1 = base1_combobox.get().strip().upper()
+    base2 = base2_combobox.get().strip().upper()
+    target = target_combobox.get().strip().upper()
+
+    # Простая заглушка, чтобы интерфейс сразу работал без API (убираем позже)
+    # В реальном проекте сюда будет запрос к open.er-api.com
+    rate1 = 90.0  # пример: сколько target за 1 base1
+    rate2 = 85.0  # пример: сколько target за 1 base2
+
+    result1_text = f"{base1} → {target}: {rate1:.2f}"
+    result2_text = f"{base2} → {target}: {rate2:.2f}"
+
+    result1_label.config(text=result1_text)
+    result2_label.config(text=result2_text)
+
+
+# --- Кнопка расчёта ---
+calc_button = Button(root, text='Посчитать курс', command=exchange, bg='#dddddd', fg='black', font=('Arial', 11, 'bold'))
+calc_button.pack(pady=15)
+
+# --- Поля для вывода результата ---
+result1_label = Label(root, text="", font=('Arial', 12), fg='#2222aa')
+result1_label.pack()
+
+result2_label = Label(root, text="", font=('Arial', 12), fg='#2222aa')
+result2_label.pack(pady=(0, 20))
+
+
 root.mainloop()
