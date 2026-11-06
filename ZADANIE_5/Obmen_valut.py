@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox as mb
 from tkinter import ttk
+import requests
 
 currencies = {
     'EUR': 'Евро',
@@ -68,16 +69,43 @@ def exchange():
     base2 = base2_combobox.get().strip().upper()
     target = target_combobox.get().strip().upper()
 
-    # Простая заглушка, чтобы интерфейс сразу работал без API (убираем позже)
-    # В реальном проекте сюда будет запрос к open.er-api.com
-    rate1 = 90.0  # пример: сколько target за 1 base1
-    rate2 = 85.0  # пример: сколько target за 1 base2
+    # Проверка, что все валюты выбраны
+    if not base1 or not base2 or not target:
+        mb.showwarning("Внимание", "Выберите все три валюты!")
+        return
 
-    result1_text = f"{base1} → {target}: {rate1:.2f}"
-    result2_text = f"{base2} → {target}: {rate2:.2f}"
+    try:
+        # Запрос к API: сколько base1 и base2 стоят в target
+        url = f"https://open.er-api.com/v6/latest/{target}"
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()  # Если статус не 200 — будет ошибка
+        data = response.json()
 
-    result1_label.config(text=result1_text)
-    result2_label.config(text=result2_text)
+        if data.get("result") != "success":
+            raise ValueError("API вернул ошибку")
+
+        rates = data.get("rates", {})
+        rate1 = rates.get(base1)
+        rate2 = rates.get(base2)
+
+        if rate1 is None or rate2 is None:
+            mb.showerror("Ошибка", "Курс для одной из валют не найден")
+            return
+
+        # API возвращает: сколько base стоит 1 target.
+        # Нам нужно наоборот: сколько target стоит 1 base. Переворачиваем.
+        result1_text = f"{base1} → {target}: {1 / rate1:.2f}"
+        result2_text = f"{base2} → {target}: {1 / rate2:.2f}"
+
+        result1_label.config(text=result1_text)
+        result2_label.config(text=result2_text)
+
+    except requests.exceptions.Timeout:
+        mb.showerror("Ошибка", "Сервер не ответил вовремя. Проверьте интернет.")
+    except requests.exceptions.RequestException as e:
+        mb.showerror("Ошибка соединения", str(e))
+    except Exception as e:
+        mb.showerror("Ошибка", f"Что-то пошло не так: {e}")
 
 
 # --- Кнопка расчёта ---
